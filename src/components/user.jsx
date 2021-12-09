@@ -1,4 +1,5 @@
 import React from 'react'
+import BookMark from './bookmark'
 import Qualitie from './qualitie'
 
 const User = ({
@@ -8,6 +9,7 @@ const User = ({
   completedMeetings,
   rate,
   _id,
+  isFavorite,
   ...rest
 }) => {
   return (
@@ -22,10 +24,12 @@ const User = ({
       <td>{completedMeetings}</td>
       <td>{rate} / 5</td>
       <td>
-        <button
-          className="btn btn-danger"
-          onClick={() => rest.onDeleteUser(_id)}
-        >
+        <button onClick={() => rest.onToggle(_id)}>
+          <BookMark status={isFavorite} />
+        </button>
+      </td>
+      <td>
+        <button className="btn btn-danger" onClick={() => rest.onDelete(_id)}>
           delete
         </button>
       </td>
