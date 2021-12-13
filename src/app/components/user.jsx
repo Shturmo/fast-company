@@ -1,6 +1,7 @@
-import React from 'react'
-import BookMark from './bookmark'
-import Qualitie from './qualitie'
+import React from "react"
+import BookMark from "./bookmark"
+import Qualitie from "./qualitie"
+import PropTypes from "prop-types"
 
 const User = ({
   name,
@@ -35,6 +36,16 @@ const User = ({
       </td>
     </tr>
   )
+}
+
+User.propTypes = {
+  name: PropTypes.string.isRequired,
+  qualities: PropTypes.array.isRequired,
+  profession: PropTypes.object.isRequired,
+  completedMeetings: PropTypes.number.isRequired,
+  rate: PropTypes.number.isRequired,
+  _id: PropTypes.string.isRequired,
+  isFavorite: PropTypes.bool,
 }
 
 export default User
