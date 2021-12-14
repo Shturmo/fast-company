@@ -10,7 +10,7 @@ const User = ({
   completedMeetings,
   rate,
   _id,
-  isFavorite,
+  bookmark,
   ...rest
 }) => {
   return (
@@ -26,7 +26,7 @@ const User = ({
       <td>{rate} / 5</td>
       <td>
         <button onClick={() => rest.onToggle(_id)}>
-          <BookMark status={isFavorite} />
+          <BookMark status={bookmark} />
         </button>
       </td>
       <td>
@@ -45,7 +45,7 @@ User.propTypes = {
   completedMeetings: PropTypes.number.isRequired,
   rate: PropTypes.number.isRequired,
   _id: PropTypes.string.isRequired,
-  isFavorite: PropTypes.bool,
+  bookmark: PropTypes.bool,
 }
 
 export default User
