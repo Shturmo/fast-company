@@ -16,6 +16,7 @@ const SearchStatus = ({ length }) => {
       ? "человека"
       : "человек"
   const phrase = `${length} ${correctDeclensionOfWord} ${correctVerbForm} с тобой сегодня`
+
   return (
     <h2>
       <span className="badge bg-primary">{phrase}</span>

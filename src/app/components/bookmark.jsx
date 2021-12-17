@@ -2,8 +2,11 @@ import React from "react"
 import PropTypes from "prop-types"
 
 const BookMark = ({ status, ...rest }) => {
-  if (status) return <i className="bi bi-heart-fill"></i>
-  return <i className="bi bi-heart"></i>
+  return (
+    <button {...rest}>
+      <i className={"bi bi-heart" + (status ? "-fill" : "")}></i>
+    </button>
+  )
 }
 
 BookMark.propTypes = {
