@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react"
 import { paginate } from "../utils/paginate"
-import Pagination from "./pagination"
+import Pagination from "../components/pagination"
 import PropTypes from "prop-types"
 import api from "../api"
-import GroupList from "./groupList"
-import SearchStatus from "./searchStatus"
+import GroupList from "../components/groupList"
+import SearchStatus from "../components/searchStatus"
 import _ from "lodash"
-import UsersTable from "./usersTable"
+import UsersTable from "../components/usersTable"
+import { useParams } from "react-router-dom"
+import UserPage from "../components/userPage"
 
 const Users = () => {
   const [users, setUsers] = useState()
@@ -26,6 +28,12 @@ const Users = () => {
   useEffect(() => {
     setCurrentPage(1)
   }, [selectedProf])
+
+  const params = useParams()
+  const { userId } = params
+  if (userId) {
+    return <UserPage id={userId} />
+  }
 
   const handleDelete = (userId) => {
     setUsers((prevState) => prevState.filter((user) => user._id !== userId))
