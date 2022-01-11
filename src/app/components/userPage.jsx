@@ -34,7 +34,7 @@ const UserPage = ({ id }) => {
 }
 
 UserPage.propTypes = {
-  id: PropTypes.string,
+  id: PropTypes.string.isRequired,
 }
 
 export default UserPage
