@@ -7,6 +7,7 @@ import GroupList from "./groupList"
 import SearchStatus from "./searchStatus"
 import _ from "lodash"
 import UsersTable from "./usersTable"
+import TextField from "./textField"
 
 const UsersList = () => {
   const [users, setUsers] = useState()
@@ -14,6 +15,7 @@ const UsersList = () => {
   const [professions, setProfessions] = useState()
   const [selectedProf, setSelectedProf] = useState()
   const [sortBy, setSortBy] = useState({ path: "name", order: "asc" })
+  const [searchString, setSearchString] = useState("")
 
   const pageSize = 8
 
@@ -41,10 +43,6 @@ const UsersList = () => {
     setUsers(updatedUsers)
   }
 
-  const handleProfessionSelect = (item) => {
-    setSelectedProf(item)
-  }
-
   const handlePageChange = (pageIndex) => {
     setCurrentPage(pageIndex)
   }
@@ -53,9 +51,28 @@ const UsersList = () => {
     setSortBy(item)
   }
 
+  const handleProfessionSelect = (item) => {
+    setSearchString("")
+    setSelectedProf(item)
+  }
+
+  const clearFilter = () => {
+    setSelectedProf()
+    setSearchString("")
+  }
+
+  const handleSearch = ({ target }) => {
+    clearFilter()
+    setSearchString(target.value)
+  }
+
   if (users) {
     const filteredUsers = selectedProf
       ? users.filter((user) => _.isEqual(user.profession, selectedProf))
+      : searchString
+      ? users.filter((user) =>
+          user.name.toLowerCase().includes(searchString.toLowerCase())
+        )
       : users
     const count = filteredUsers.length
     const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order])
@@ -64,10 +81,6 @@ const UsersList = () => {
     // При удалении последнего элемента на последней странице отображаем предпоследнюю страницу
     if (userCrop.length === 0 && currentPage !== 1) {
       setCurrentPage(Math.ceil(count / pageSize))
-    }
-
-    const clearFilter = () => {
-      setSelectedProf()
     }
 
     return (
@@ -86,6 +99,12 @@ const UsersList = () => {
         )}
         <div className="d-flex flex-column w-100">
           <SearchStatus length={count} />
+          <TextField
+            name="searchString"
+            value={searchString}
+            onChange={handleSearch}
+            placeholder="Search..."
+          />
           {count !== 0 && (
             <UsersTable
               users={userCrop}
