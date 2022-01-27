@@ -22,18 +22,16 @@ const EditorForm = ({ id }) => {
   const history = useHistory()
 
   useEffect(() => {
-    api.users.getById(id).then((user) => {
-      const qualitiesArray = user.qualities.map((qualitie) => ({
+    api.users.getById(id).then(({ profession, qualities, ...data }) => {
+      const qualitiesArray = qualities.map((qualitie) => ({
         label: qualitie.name,
         value: qualitie._id,
       }))
 
       setData((prevState) => ({
         ...prevState,
-        name: user.name,
-        email: user.email,
-        profession: user.profession._id,
-        sex: user.sex,
+        ...data,
+        profession: profession._id,
         qualities: qualitiesArray,
       }))
     })
@@ -90,9 +88,7 @@ const EditorForm = ({ id }) => {
     )
 
     const updatedData = {
-      name: data.name,
-      email: data.email,
-      sex: data.sex,
+      ...data,
       profession: professions[updatedProf],
       qualities: updatedQualities.map((updatedQual) => qualities[updatedQual]),
     }

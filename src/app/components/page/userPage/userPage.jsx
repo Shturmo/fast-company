@@ -15,7 +15,7 @@ const UserPage = ({ id }) => {
 
   const history = useHistory()
   const handleChange = () => {
-    history.push(`/users/${id}/edit`)
+    history.push(history.location.pathname + "/edit")
   }
 
   if (user) {
