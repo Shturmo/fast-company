@@ -14,8 +14,8 @@ const UserPage = ({ id }) => {
   }, [])
 
   const history = useHistory()
-  const handleAllUsers = () => {
-    history.push("/users")
+  const handleChange = () => {
+    history.push(`/users/${id}/edit`)
   }
 
   if (user) {
@@ -26,7 +26,7 @@ const UserPage = ({ id }) => {
         <Qualities qualities={user.qualities} />
         <p>completedMeetings: {user.completedMeetings}</p>
         <h2>Rate: {user.rate}</h2>
-        <button onClick={handleAllUsers}>Все пользователи</button>
+        <button onClick={handleChange}>Изменить</button>
       </>
     )
   }
