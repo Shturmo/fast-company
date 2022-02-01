@@ -16,12 +16,14 @@ const EditorForm = ({ id }) => {
     sex: "male",
     qualities: [],
   })
+  const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({})
-  const [professions, setProfessions] = useState()
+  const [professions, setProfessions] = useState([])
   const [qualities, setQualities] = useState({})
   const history = useHistory()
 
   useEffect(() => {
+    setIsLoading(true)
     api.users.getById(id).then(({ profession, qualities, ...data }) => {
       const qualitiesArray = qualities.map((qualitie) => ({
         label: qualitie.name,
@@ -45,6 +47,7 @@ const EditorForm = ({ id }) => {
 
   useEffect(() => {
     validate()
+    if (data._id) setIsLoading(false)
   }, [data])
 
   const validatorConfig = {
@@ -97,7 +100,9 @@ const EditorForm = ({ id }) => {
     })
   }
 
-  return professions && qualities ? (
+  return !isLoading &&
+    Object.keys(professions).length > 0 &&
+    Object.keys(qualities).length > 0 ? (
     <form onSubmit={handleSubmit}>
       <TextField
         label="Имя"

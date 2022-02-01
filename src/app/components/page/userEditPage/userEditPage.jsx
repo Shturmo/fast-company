@@ -1,13 +1,15 @@
 import React from "react"
 import PropTypes from "prop-types"
 import EditorForm from "../../ui/editorForm"
+import BackHistoryButton from "../../common/backButton"
 
-const UserEditPage = ({ id }) => {
+const UserEditPage = ({ userId }) => {
   return (
     <div className="container mt-5">
+      <BackHistoryButton />
       <div className="row">
         <div className="col-md-6 offset-md-3 shadow p-4">
-          <EditorForm id={id} />
+          <EditorForm id={userId} />
         </div>
       </div>
     </div>
@@ -15,7 +17,7 @@ const UserEditPage = ({ id }) => {
 }
 
 UserEditPage.propTypes = {
-  id: PropTypes.string,
+  userId: PropTypes.string,
 }
 
 export default UserEditPage
