@@ -61,7 +61,7 @@ const UsersListPage = () => {
     setSearchString("")
   }
 
-  const handleSearch = ({ target }) => {
+  const handleSearch = (target) => {
     clearFilter()
     setSearchString(target.value)
   }
