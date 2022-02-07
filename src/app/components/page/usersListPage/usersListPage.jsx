@@ -20,7 +20,7 @@ const UsersListPage = () => {
   const pageSize = 8
 
   const { users } = useUser()
-  // console.log(users)
+  console.log(users)
 
   useEffect(() => {
     api.professions.fetchAll().then((data) => setProfessions(data))
@@ -79,7 +79,6 @@ const UsersListPage = () => {
     const count = filteredUsers.length
     const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order])
     const userCrop = paginate(sortedUsers, currentPage, pageSize)
-    console.log(userCrop)
 
     // При удалении последнего элемента на последней странице отображаем предпоследнюю страницу
     if (userCrop.length === 0 && currentPage !== 1) {

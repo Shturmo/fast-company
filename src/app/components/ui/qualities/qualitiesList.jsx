@@ -11,7 +11,6 @@ const QualitiesList = ({ qualities }) => {
       <>
         {qualities.map((qualityId) => {
           const quality = getQuality(qualityId)
-          console.log(quality)
           return <Qualitie key={quality._id} {...quality} />
         })}
       </>
