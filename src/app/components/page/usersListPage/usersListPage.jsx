@@ -8,9 +8,9 @@ import SearchStatus from "../../ui/searchStatus"
 import _ from "lodash"
 import UsersTable from "../../ui/usersTable"
 import TextField from "../../common/form/textField"
+import { useUser } from "../../../hooks/useUsers"
 
 const UsersListPage = () => {
-  const [users, setUsers] = useState()
   const [currentPage, setCurrentPage] = useState(1)
   const [professions, setProfessions] = useState()
   const [selectedProf, setSelectedProf] = useState()
@@ -19,9 +19,9 @@ const UsersListPage = () => {
 
   const pageSize = 8
 
-  useEffect(() => {
-    api.users.fetchAll().then((data) => setUsers(data))
-  }, [])
+  const { users } = useUser()
+  // console.log(users)
+
   useEffect(() => {
     api.professions.fetchAll().then((data) => setProfessions(data))
   }, [])
@@ -30,7 +30,8 @@ const UsersListPage = () => {
   }, [selectedProf])
 
   const handleDelete = (userId) => {
-    setUsers((prevState) => prevState.filter((user) => user._id !== userId))
+    // setUsers((prevState) => prevState.filter((user) => user._id !== userId))
+    console.log(userId)
   }
 
   const handleToggleBookMark = (userId) => {
@@ -40,7 +41,8 @@ const UsersListPage = () => {
       }
       return user
     })
-    setUsers(updatedUsers)
+    // setUsers(updatedUsers)
+    console.log(updatedUsers)
   }
 
   const handlePageChange = (pageIndex) => {
@@ -77,6 +79,7 @@ const UsersListPage = () => {
     const count = filteredUsers.length
     const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order])
     const userCrop = paginate(sortedUsers, currentPage, pageSize)
+    console.log(userCrop)
 
     // При удалении последнего элемента на последней странице отображаем предпоследнюю страницу
     if (userCrop.length === 0 && currentPage !== 1) {

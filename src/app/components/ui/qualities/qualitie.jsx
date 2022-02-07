@@ -6,8 +6,8 @@ const Qualitie = ({ color, name }) => {
 }
 
 Qualitie.propTypes = {
-  color: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
+  color: PropTypes.string,
+  name: PropTypes.string,
 }
 
 export default Qualitie
