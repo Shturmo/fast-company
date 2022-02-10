@@ -25,6 +25,11 @@ export const QualitiesProvider = ({ children }) => {
     }
   }, [error])
 
+  function errorCatcher(error) {
+    const { message } = error.response.data
+    setError(message)
+  }
+
   const getQuality = (id) => {
     return qualities.find((q) => q._id === id)
   }
@@ -37,11 +42,6 @@ export const QualitiesProvider = ({ children }) => {
     } catch (error) {
       errorCatcher(error)
     }
-  }
-
-  function errorCatcher(error) {
-    const { message } = error.response.data
-    setError(message)
   }
 
   return (
