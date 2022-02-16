@@ -10,6 +10,9 @@ const AddCommentForm = ({ onSubmit }) => {
   const [errors, setErrors] = useState({})
 
   const handleChange = (target) => {
+    if (Object.keys(errors).length > 0) {
+      setErrors({})
+    }
     setData((prevState) => ({
       ...prevState,
       [target.name]: target.value,
@@ -25,7 +28,6 @@ const AddCommentForm = ({ onSubmit }) => {
   }
 
   const validate = () => {
-    console.log("AddCommentForm", data)
     const errors = validator(data, validatorConfig)
     setErrors(errors)
     return Object.keys(errors).length === 0

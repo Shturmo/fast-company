@@ -65,7 +65,6 @@ const EditorForm = () => {
   }
 
   const validate = () => {
-    console.log("EditorForm", data)
     const errors = validator(data, validatorConfig)
     setErrors(errors)
     return Object.keys(errors).length === 0

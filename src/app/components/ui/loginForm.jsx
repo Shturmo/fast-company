@@ -27,7 +27,6 @@ const LoginForm = () => {
   }
 
   const validate = () => {
-    console.log("LoginForm", data)
     const errors = validator(data, validatorConfig)
     setErrors(errors)
     return Object.keys(errors).length === 0

@@ -75,7 +75,6 @@ const RegisterForm = () => {
   }
 
   const validate = () => {
-    console.log("RegisterForm", data)
     const errors = validator(data, validatorConfig)
     setErrors(errors)
     return Object.keys(errors).length === 0
