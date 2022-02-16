@@ -10,6 +10,7 @@ const LoginForm = () => {
   const history = useHistory()
   const [data, setData] = useState({ email: "", password: "", stayOn: false })
   const [errors, setErrors] = useState({})
+  const [enterError, setEnterError] = useState(null)
   const { signIn } = useAuth()
 
   useEffect(() => {
@@ -19,24 +20,14 @@ const LoginForm = () => {
   const validatorConfig = {
     email: {
       isRequired: { message: "Электронная почта обязательна для заполнения" },
-      isEmail: { message: "Email введен некорректно" },
     },
     password: {
       isRequired: { message: "Пароль обязателен для заполнения" },
-      isCapitalSymbol: {
-        message: "Пароль должен содержать хобя бы одну заглавную букву",
-      },
-      isContainDigit: {
-        message: "Пароль должен содержать хобя бы одно число",
-      },
-      min: {
-        message: "Пароль должен состоять минимум из 8 символов",
-        value: 8,
-      },
     },
   }
 
   const validate = () => {
+    console.log("LoginForm", data)
     const errors = validator(data, validatorConfig)
     setErrors(errors)
     return Object.keys(errors).length === 0
@@ -45,6 +36,7 @@ const LoginForm = () => {
 
   const handleChange = (target) => {
     setData((prevState) => ({ ...prevState, [target.name]: target.value }))
+    setEnterError(null)
   }
 
   const handleSubmit = async (e) => {
@@ -55,9 +47,11 @@ const LoginForm = () => {
 
     try {
       await signIn(data)
-      history.push("/")
+      history.push(
+        history.location.state ? history.location.state.from.pathname : "/"
+      )
     } catch (error) {
-      setErrors(error)
+      setEnterError(error.message)
     }
   }
 
@@ -81,10 +75,10 @@ const LoginForm = () => {
       <CheckBoxField value={data.stayOn} onChange={handleChange} name="stayOn">
         Оставаться в системе
       </CheckBoxField>
-
+      {enterError && <p className="text-danger">{enterError}</p>}
       <button
         type="submit"
-        disabled={!isValid}
+        disabled={!isValid || enterError}
         className="btn btn-primary w-100 mx-auto"
       >
         Submit

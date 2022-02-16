@@ -3,9 +3,17 @@ import PropTypes from "prop-types"
 import axios from "axios"
 import userService from "../services/user.sevice"
 import { toast } from "react-toastify"
-import { setTokens } from "../services/localStorage.service"
+import localStorageService, {
+  setTokens,
+} from "../services/localStorage.service"
+import { useHistory } from "react-router-dom"
 
-const httpAuth = axios.create()
+export const httpAuth = axios.create({
+  baseURL: "https://identitytoolkit.googleapis.com/v1/",
+  params: {
+    key: process.env.REACT_APP_FIREBASE_KEY,
+  },
+})
 const AuthContext = React.createContext()
 
 export const useAuth = () => {
@@ -13,51 +21,67 @@ export const useAuth = () => {
 }
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setUser] = useState({})
+  const [currentUser, setUser] = useState()
   const [error, setError] = useState(null)
+  const [isLoading, setLoading] = useState(true)
+  const history = useHistory()
 
-  async function signIn({ email, password, ...rest }) {
-    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.REACT_APP_FIREBASE_KEY}`
-
+  async function signIn({ email, password }) {
     try {
-      const { data } = await httpAuth.post(url, {
+      const { data } = await httpAuth.post(`accounts:signInWithPassword`, {
         email,
         password,
         returnSecureToken: true,
       })
 
       setTokens(data)
+      await getUserData()
     } catch (error) {
+      errorCatcher(error)
       const { code, message } = error.response.data.error
 
       if (code === 400) {
-        if (message === "EMAIL_NOT_FOUND") {
-          const errorObject = {
-            email: "Пользователь с таким Email не зарегестрирован",
-          }
-          throw errorObject
-        } else if (message === "INVALID_PASSWORD") {
-          const errorObject = {
-            password: "Указан неверный пароль",
-          }
-          throw errorObject
+        switch (message) {
+          case "INVALID_PASSWORD":
+          case "EMAIL_NOT_FOUND":
+            throw new Error("Email или пароль введены неверно")
+
+          default:
+            throw new Error("Слишком много попыток входа. Попробуйте позднее")
         }
       }
     }
   }
 
-  async function signUp({ email, password, ...rest }) {
-    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${process.env.REACT_APP_FIREBASE_KEY}`
+  function logOut() {
+    localStorageService.removeAuthData()
+    setUser(null)
+    history.push("/")
+  }
 
+  function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+  }
+
+  async function signUp({ email, password, ...rest }) {
     try {
-      const { data } = await httpAuth.post(url, {
+      const { data } = await httpAuth.post(`accounts:signUp`, {
         email,
         password,
         returnSecureToken: true,
       })
 
       setTokens(data)
-      await createUser({ _id: data.localId, email, password, ...rest })
+      await createUser({
+        _id: data.localId,
+        email,
+        rate: randomInt(1, 5),
+        completedMeetings: randomInt(0, 200),
+        image: `https://avatars.dicebear.com/api/avataaars/${(Math.random() + 1)
+          .toString(36)
+          .substring(7)}.svg`,
+        ...rest,
+      })
     } catch (error) {
       errorCatcher(error)
       const { code, message } = error.response.data.error
@@ -82,6 +106,32 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  async function getUserData() {
+    try {
+      const { content } = await userService.getCurrentUser()
+      setUser(content)
+    } catch (error) {
+      errorCatcher(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function updateUser(data) {
+    try {
+      await createUser(data)
+    } catch (error) {
+      errorCatcher()
+    }
+  }
+
+  useEffect(() => {
+    if (localStorageService.getAccessToken()) {
+      getUserData()
+    } else {
+      setLoading(false)
+    }
+  }, [])
   useEffect(() => {
     if (error !== null) {
       toast(error)
@@ -95,8 +145,10 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ signIn, signUp, currentUser }}>
-      {children}
+    <AuthContext.Provider
+      value={{ signIn, signUp, logOut, currentUser, updateUser }}
+    >
+      {!isLoading ? children : "Loading... useAuth"}
     </AuthContext.Provider>
   )
 }

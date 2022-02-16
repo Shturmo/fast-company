@@ -16,7 +16,11 @@ export function displayDate(data) {
         return "30 минут назад"
       }
 
-      return `${date.getHours()}:${date.getMinutes()}`
+      return (
+        `${date.getHours()}:` +
+        (date.getMinutes() < 10 ? "0" : "") +
+        `${date.getMinutes()}`
+      )
     }
 
     return `${date.getDay()} ${date.toLocaleString("en-US", {
