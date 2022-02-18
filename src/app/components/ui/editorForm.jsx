@@ -11,7 +11,7 @@ import { useQualities } from "../../hooks/useQualities"
 import { useAuth } from "../../hooks/useAuth"
 
 const EditorForm = () => {
-  const { currentUser, updateUser } = useAuth()
+  const { currentUser, updateUserData } = useAuth()
   const { professions, isLoading: professionsLoading } = useProfessions()
   const { qualities, isLoading: qualitiesLoading, getQuality } = useQualities()
 
@@ -33,8 +33,8 @@ const EditorForm = () => {
       const transformedUserQualities = currentUser.qualities.map((id) => {
         const q = getQuality(id)
         return {
-          label: q?.name,
-          value: q?._id,
+          label: q.name,
+          value: q._id,
         }
       })
       setData({ ...currentUser, qualities: transformedUserQualities })
@@ -62,6 +62,9 @@ const EditorForm = () => {
     profession: {
       isRequired: { message: "Обязательно выберите вашу профессию" },
     },
+    qualities: {
+      isRequired: { message: "Необходимо выбрать хотя бы одно качество" },
+    },
   }
 
   const validate = () => {
@@ -87,7 +90,7 @@ const EditorForm = () => {
     const updatedUser = { ...data, qualities: transformedBackUserQualities }
 
     try {
-      await updateUser(updatedUser)
+      await updateUserData(updatedUser)
       history.push(`/users/${currentUser._id}`)
     } catch (error) {
       setErrors(error)
@@ -136,6 +139,7 @@ const EditorForm = () => {
         defaultValue={data.qualities}
         name="qualities"
         label="Выберите ваши качества"
+        error={errors.qualities}
       />
       <button
         type="submit"

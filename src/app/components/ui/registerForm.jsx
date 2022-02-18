@@ -66,6 +66,9 @@ const RegisterForm = () => {
     profession: {
       isRequired: { message: "Обязательно выберите вашу профессию" },
     },
+    qualities: {
+      isRequired: { message: "Необходимо выбрать хотя бы одно качество" },
+    },
     licence: {
       isRequired: {
         message:
@@ -151,6 +154,7 @@ const RegisterForm = () => {
         defaultValue={data.qualities}
         name="qualities"
         label="Выберите ваши качества"
+        error={errors.qualities}
       />
       <CheckBoxField
         value={data.licence}
