@@ -6,14 +6,21 @@ import RadioField from "../common/form/radioField"
 import MultiSelectField from "../common/form/multiSelectField"
 import { validator } from "../../utils/validator"
 import { useHistory } from "react-router-dom"
-import { useProfessions } from "../../hooks/useProfession"
-import { useQualities } from "../../hooks/useQualities"
 import { useAuth } from "../../hooks/useAuth"
+import { useSelector } from "react-redux"
+import { getQualities, getQualitiesLoadingStatus } from "../../store/qualities"
+import {
+  getProfessions,
+  getProfessionsLoadingStatus,
+} from "../../store/professions"
 
 const EditorForm = () => {
   const { currentUser, updateUserData } = useAuth()
-  const { professions, isLoading: professionsLoading } = useProfessions()
-  const { qualities, isLoading: qualitiesLoading, getQuality } = useQualities()
+
+  const professions = useSelector(getProfessions())
+  const professionsLoading = useSelector(getProfessionsLoadingStatus())
+  const qualities = useSelector(getQualities())
+  const qualitiesLoading = useSelector(getQualitiesLoadingStatus())
 
   const [data, setData] = useState()
   const [errors, setErrors] = useState({})
@@ -31,7 +38,7 @@ const EditorForm = () => {
   useEffect(() => {
     if (qualities.length > 0) {
       const transformedUserQualities = currentUser.qualities.map((id) => {
-        const q = getQuality(id)
+        const q = qualities.find((qual) => qual._id === id)
         return {
           label: q.name,
           value: q._id,

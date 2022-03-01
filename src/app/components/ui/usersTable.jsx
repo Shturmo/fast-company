@@ -19,7 +19,7 @@ const UsersTable = ({ users, onSort, selectedSort, onToggleBookMark }) => {
     },
     professions: {
       name: "Профессия",
-      component: (user) => <Profession id={user.profession} />,
+      component: (user) => <Profession profId={user.profession} />,
     },
     completedMeetings: {
       path: "completedMeetings",
