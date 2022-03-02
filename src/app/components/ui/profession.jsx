@@ -13,7 +13,7 @@ const Profession = ({ profId }) => {
   if (!isLoading) {
     return <p>{prof.name}</p>
   }
-  return "loading..."
+  return "loading profession"
 }
 
 Profession.propTypes = {

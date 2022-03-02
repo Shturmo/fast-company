@@ -13,9 +13,11 @@ import {
   getProfessions,
   getProfessionsLoadingStatus,
 } from "../../store/professions"
+import { getCurrentUserData } from "../../store/users"
 
 const EditorForm = () => {
-  const { currentUser, updateUserData } = useAuth()
+  const { updateUserData } = useAuth()
+  const currentUser = useSelector(getCurrentUserData())
 
   const professions = useSelector(getProfessions())
   const professionsLoading = useSelector(getProfessionsLoadingStatus())
@@ -157,7 +159,7 @@ const EditorForm = () => {
       </button>
     </form>
   ) : (
-    "Loading... editorForm"
+    "loading editorForm"
   )
 }
 

@@ -25,7 +25,7 @@ const QualitiesList = ({ qualities }) => {
       </>
     )
   }
-  return "loading..."
+  return "loading qualitiesList"
 }
 
 QualitiesList.propTypes = {

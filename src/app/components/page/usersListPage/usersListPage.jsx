@@ -7,17 +7,16 @@ import SearchStatus from "../../ui/searchStatus"
 import _ from "lodash"
 import UsersTable from "../../ui/usersTable"
 import TextField from "../../common/form/textField"
-import { useUser } from "../../../hooks/useUsers"
-import { useAuth } from "../../../hooks/useAuth"
 import { useSelector } from "react-redux"
 import {
   getProfessions,
   getProfessionsLoadingStatus,
 } from "../../../store/professions"
+import { getCurrentUserId, getUsers } from "../../../store/users"
 
 const UsersListPage = () => {
-  const { users } = useUser()
-  const { currentUser } = useAuth()
+  const users = useSelector(getUsers())
+  const currentUserId = useSelector(getCurrentUserId())
 
   const professions = useSelector(getProfessions())
   const professionsLoading = useSelector(getProfessionsLoadingStatus())
@@ -72,73 +71,72 @@ const UsersListPage = () => {
     setSearchQuery(target.value)
   }
 
-  if (users) {
-    function filterUsers(data) {
-      const filteredUsers = selectedProf
-        ? data.filter((user) => _.isEqual(user.profession, selectedProf._id))
-        : searchQuery
-        ? data.filter((user) =>
-            user.name.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-        : data
+  if (!users) return "loading usersListPage"
 
-      return filteredUsers.filter((user) => user._id !== currentUser._id)
-    }
+  function filterUsers(data) {
+    const filteredUsers = selectedProf
+      ? data.filter((user) => _.isEqual(user.profession, selectedProf._id))
+      : searchQuery
+      ? data.filter((user) =>
+          user.name.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      : data
 
-    const filteredUsers = filterUsers(users)
-    const count = filteredUsers.length
-    const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order])
-    const userCrop = paginate(sortedUsers, currentPage, pageSize)
+    return filteredUsers.filter((user) => user._id !== currentUserId)
+  }
 
-    // При удалении последнего элемента на последней странице отображаем предпоследнюю страницу
-    if (userCrop.length === 0 && currentPage !== 1) {
-      setCurrentPage(Math.ceil(count / pageSize))
-    }
+  const filteredUsers = filterUsers(users)
+  const count = filteredUsers.length
+  const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order])
+  const userCrop = paginate(sortedUsers, currentPage, pageSize)
 
-    return (
-      <div className="d-flex">
-        {professions && !professionsLoading && (
-          <div className="d-flex flex-column flex-shrink-0 p-3">
-            <GroupList
-              selectedItem={selectedProf}
-              items={professions}
-              onItemSelect={handleProfessionSelect}
-            />
-            <button className="btn btn-secondary mt-2" onClick={clearFilter}>
-              Очистить
-            </button>
-          </div>
-        )}
-        <div className="d-flex flex-column w-100">
-          <SearchStatus length={count} />
-          <TextField
-            name="searchQuery"
-            value={searchQuery}
-            onChange={handleSearch}
-            placeholder="Search..."
+  // При удалении последнего элемента на последней странице отображаем предпоследнюю страницу
+  if (userCrop.length === 0 && currentPage !== 1) {
+    setCurrentPage(Math.ceil(count / pageSize))
+  }
+
+  return (
+    <div className="d-flex">
+      {professions && !professionsLoading && (
+        <div className="d-flex flex-column flex-shrink-0 p-3">
+          <GroupList
+            selectedItem={selectedProf}
+            items={professions}
+            onItemSelect={handleProfessionSelect}
           />
-          {count !== 0 && (
-            <UsersTable
-              users={userCrop}
-              onSort={handleSort}
-              selectedSort={sortBy}
-              onDelete={handleDelete}
-              onToggleBookMark={handleToggleBookMark}
-            />
-          )}
-          <div className="d-flex justify-content-center">
-            <Pagination
-              itemsCount={count}
-              pageSize={pageSize}
-              currentPage={currentPage}
-              onPageChange={handlePageChange}
-            />
-          </div>
+          <button className="btn btn-secondary mt-2" onClick={clearFilter}>
+            Очистить
+          </button>
+        </div>
+      )}
+      <div className="d-flex flex-column w-100">
+        <SearchStatus length={count} />
+        <TextField
+          name="searchQuery"
+          value={searchQuery}
+          onChange={handleSearch}
+          placeholder="Search..."
+        />
+        {count !== 0 && (
+          <UsersTable
+            users={userCrop}
+            onSort={handleSort}
+            selectedSort={sortBy}
+            onDelete={handleDelete}
+            onToggleBookMark={handleToggleBookMark}
+          />
+        )}
+        <div className="d-flex justify-content-center">
+          <Pagination
+            itemsCount={count}
+            pageSize={pageSize}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
-    )
-  }
-  return "loading..."
+    </div>
+  )
 }
 
 UsersListPage.propTypes = {
