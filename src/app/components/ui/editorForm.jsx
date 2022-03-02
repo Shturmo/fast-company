@@ -5,20 +5,18 @@ import SelectField from "../common/form/selectField"
 import RadioField from "../common/form/radioField"
 import MultiSelectField from "../common/form/multiSelectField"
 import { validator } from "../../utils/validator"
-import { useHistory } from "react-router-dom"
-import { useAuth } from "../../hooks/useAuth"
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
 import { getQualities, getQualitiesLoadingStatus } from "../../store/qualities"
 import {
   getProfessions,
   getProfessionsLoadingStatus,
 } from "../../store/professions"
-import { getCurrentUserData } from "../../store/users"
+import { getCurrentUserData, updateUser } from "../../store/users"
 
 const EditorForm = () => {
-  const { updateUserData } = useAuth()
-  const currentUser = useSelector(getCurrentUserData())
+  const dispatch = useDispatch()
 
+  const currentUser = useSelector(getCurrentUserData())
   const professions = useSelector(getProfessions())
   const professionsLoading = useSelector(getProfessionsLoadingStatus())
   const qualities = useSelector(getQualities())
@@ -26,7 +24,6 @@ const EditorForm = () => {
 
   const [data, setData] = useState()
   const [errors, setErrors] = useState({})
-  const history = useHistory()
 
   const professionsList = professions.map((p) => ({
     label: p.name,
@@ -88,22 +85,16 @@ const EditorForm = () => {
     setData((prevState) => ({ ...prevState, [target.name]: target.value }))
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
     const isValid = validate()
+
     if (!isValid) return
 
     const transformedBackUserQualities = data.qualities.map(
       (qual) => qual.value
     )
-    const updatedUser = { ...data, qualities: transformedBackUserQualities }
-
-    try {
-      await updateUserData(updatedUser)
-      history.push(`/users/${currentUser._id}`)
-    } catch (error) {
-      setErrors(error)
-    }
+    dispatch(updateUser({ ...data, qualities: transformedBackUserQualities }))
   }
 
   return data && !professionsLoading && !qualitiesLoading ? (

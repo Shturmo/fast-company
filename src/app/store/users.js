@@ -58,6 +58,15 @@ const usersSlice = createSlice({
       state.auth = null
       state.dataLoaded = false
     },
+    userUpdateSuccess: (state, action) => {
+      const indexUser = state.entities.findIndex(
+        (u) => u._id === action.payload._id
+      )
+      state.entities[indexUser] = action.payload
+    },
+    userUpdateFailed: (state, action) => {
+      state.error = action.payload
+    },
   },
 })
 
@@ -70,11 +79,14 @@ const {
   authRequestFailed,
   userCreated,
   userLoggedOut,
+  userUpdateSuccess,
+  userUpdateFailed,
 } = actions
 
 const authRequested = createAction("users/authRequested")
 const userCreateRequested = createAction("users/userCreateRequested")
-const createUserFailed = createAction("users/createUserFailed")
+const userCreateFailed = createAction("users/userCreateFailed")
+const userUpdateRequested = createAction("users/userUpdateRequested")
 
 export const login =
   ({ payload, redirect }) =>
@@ -132,7 +144,7 @@ function createUser(payload) {
       dispatch(userCreated(content))
       history.push("/users")
     } catch (error) {
-      dispatch(createUserFailed(error.message))
+      dispatch(userCreateFailed(error.message))
     }
   }
 }
@@ -149,6 +161,17 @@ export const loadUsersList = () => async (dispatch, getState) => {
     // }, 2000)
   } catch (error) {
     dispatch(usersRequestFailed(error.message))
+  }
+}
+
+export const updateUser = (payload) => async (dispatch, getState) => {
+  dispatch(userUpdateRequested())
+  try {
+    const { content } = await userService.update(payload)
+    dispatch(userUpdateSuccess(content))
+    history.push(`/users/${getState().users.auth.userId}`)
+  } catch (error) {
+    dispatch(userUpdateFailed(error.message))
   }
 }
 
