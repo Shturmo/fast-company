@@ -37,11 +37,6 @@ export const loadProfessionsList = () => async (dispatch, getState) => {
     try {
       const { content } = await professionService.fetchAll()
       dispatch(professionsReceved(content))
-
-      // setTimeout(() => {
-      //   dispatch(professionsReceved(content))
-      //   console.log("loadProfessionsList", getState())
-      // }, 2000)
     } catch (error) {
       dispatch(professionsRequestFailed(error.message))
     }

@@ -36,11 +36,6 @@ export const loadQualitiesList = () => async (dispatch, getState) => {
     try {
       const { content } = await qualityService.fetchAll()
       dispatch(qualitiesReceved(content))
-
-      // setTimeout(() => {
-      //   dispatch(qualitiesReceved(content))
-      //   console.log("loadQualitiesList", getState())
-      // }, 1000)
     } catch (error) {
       dispatch(qualitiesRequestFailed(error.message))
     }

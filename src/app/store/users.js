@@ -2,6 +2,7 @@ import { createAction, createSlice } from "@reduxjs/toolkit"
 import authService from "../services/auth.service"
 import localStorageService from "../services/localStorage.service"
 import userService from "../services/user.sevice"
+import { generateAuthError } from "../utils/generateAuthError"
 import getRandomInt from "../utils/getRandomInt"
 import history from "../utils/history"
 
@@ -67,6 +68,9 @@ const usersSlice = createSlice({
     userUpdateFailed: (state, action) => {
       state.error = action.payload
     },
+    authRequested: (state) => {
+      state.error = null
+    },
   },
 })
 
@@ -99,7 +103,13 @@ export const login =
       localStorageService.setTokens(data)
       history.push(redirect)
     } catch (error) {
-      dispatch(authRequestFailed(error.message))
+      const { code, message } = error.response.data.error
+      if (code === 400) {
+        const errorMessage = generateAuthError(message)
+        dispatch(authRequestFailed(errorMessage))
+      } else {
+        dispatch(authRequestFailed(error.message))
+      }
     }
   }
 
@@ -154,22 +164,17 @@ export const loadUsersList = () => async (dispatch, getState) => {
   try {
     const { content } = await userService.fetchAll()
     dispatch(usersReceved(content))
-
-    // setTimeout(() => {
-    //   dispatch(usersReceved(content))
-    //   console.log("loadUsersList", getState())
-    // }, 2000)
   } catch (error) {
     dispatch(usersRequestFailed(error.message))
   }
 }
 
-export const updateUser = (payload) => async (dispatch, getState) => {
+export const updateUser = (payload) => async (dispatch) => {
   dispatch(userUpdateRequested())
   try {
     const { content } = await userService.update(payload)
     dispatch(userUpdateSuccess(content))
-    history.push(`/users/${getState().users.auth.userId}`)
+    history.push(`/users/${content._id}`)
   } catch (error) {
     dispatch(userUpdateFailed(error.message))
   }
@@ -191,5 +196,6 @@ export const getIsLoggedIn = () => (state) => state.users.isLoggedIn
 export const getDataStatus = () => (state) => state.users.dataLoaded
 export const getUsersLoadingStatus = () => (state) => state.users.isLoading
 export const getCurrentUserId = () => (state) => state.users.auth.userId
+export const getAuthErros = () => (state) => state.users.error
 
 export default usersReducer
